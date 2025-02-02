@@ -1,0 +1,33 @@
+
+  
+    
+
+  create  table "DBT"."raw"."dim_listings_w_hosts__dbt_tmp"
+  
+  
+    as
+  
+  (
+    
+
+WITH    
+l As (
+    select * from "DBT"."raw"."dim_listings_cleansed"
+),
+h as (select * from "DBT"."raw"."dim_hosts_cleansed")
+
+select 
+    l.listing_id,
+    l.listing_name,
+    l.room_type,
+    l.minimum_nights,
+    l.price_str,
+    l.host_id,
+    h.NAME,
+    h.IS_SUPERHOST as host_is_superhost,
+    l.created_at,
+    GREATEST (l.updated_at,h.updated_at) as update_at
+    from l   
+    left join h on (h.host_id = l.host_id)
+  );
+  
